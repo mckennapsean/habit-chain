@@ -1,0 +1,92 @@
+body {
+  display: flex;
+  margin-top: 80px;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  justify-content: space-evenly;
+  background-color: #ede7ff;
+}
+body.complete {
+  background-color: #bfa6ff;
+}
+.input {
+  display: none;
+}
+.setup {
+  display: block;
+  margin-bottom: 8px;
+}
+.habit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  user-select: none;
+  flex-basis: 25.1%;
+}
+.hidden {
+  display: none;
+}
+/* TODO: quick hack to get a rounded circle in, but maybe SVG? */
+.circle {
+  /* TODO: not hard-code the pixels here */
+  width: 200px;
+  height: 200px;
+  margin: 16px;
+  background-color: #DF8FFF;
+  border-radius: 50%;
+  cursor: pointer;
+
+/*  these alone don't seem to stop windows from opening up context menu on long press... annoying  */
+  -webkit-touch-callout:none;
+-webkit-user-select:none;
+-khtml-user-select:none;
+-moz-user-select:none;
+-ms-user-select:none;
+user-select:none;
+  -webkit-touch-callout: none; /* Safari Touch */
+  -webkit-user-select: none;   /* Webkit */
+  -moz-user-select: none;      /* Firefox */
+  -ms-user-select: none;       /* Edge*/
+   user-select: none;       /* Future-proof*/
+-webkit-tap-highlight-color:rgba(0,0,0,0);
+}
+.fadecolor {
+  animation-duration: 500ms;
+  animation-name: fadecolor;
+  animation-play-state: running;
+}
+.paused {
+  animation-play-state: paused;
+}
+.completed {
+  background-color: #7e4dff;
+  animation-play-state: paused;
+}
+@keyframes fadecolor {
+  from {
+    background-color: #DF8FFF;
+    transform: scale(10%);
+  }
+
+  to {
+    background-color: #7e4dff;
+    transform: scale(100%);
+  }
+}
+.counter {
+  position: relative;
+  height: 0;
+  top: -140px;
+  font-size: 40px;
+  pointer-events: none;
+}
+.counter.completed {
+  color: white;
+}
+.text {
+  font-size: 24px;
+  margin-bottom: 16px;
+  /* TODO: remove hard-coded px */
+  max-width: 200px;
+  text-align: center;
+}
