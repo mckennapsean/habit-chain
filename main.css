@@ -3,7 +3,7 @@ body {
   margin-top: 80px;
   flex-wrap: wrap;
   align-content: flex-start;
-  justify-content: space-evenly;
+  justify-content: center;
   background-color: #ede7ff;
 }
 body.complete {
@@ -26,12 +26,10 @@ body.complete {
 .hidden {
   display: none;
 }
-/* TODO: quick hack to get a rounded circle in, but maybe SVG? */
 .circle {
-  /* TODO: not hard-code the pixels here */
   width: 200px;
   height: 200px;
-  margin: 16px;
+  margin: 16px 32px;
   background-color: #DF8FFF;
   border-radius: 50%;
   cursor: pointer;
@@ -86,7 +84,7 @@ user-select:none;
 .text {
   font-size: 24px;
   margin-bottom: 16px;
-  /* TODO: remove hard-coded px */
+  /* keep in sync with the rounded "circle" class */
   max-width: 200px;
   text-align: center;
 }
