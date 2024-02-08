@@ -11,10 +11,19 @@ body.complete {
 }
 .input {
   display: none;
+  font-size: x-large;
 }
 .setup {
   display: block;
-  margin-bottom: 8px;
+  min-width: 300px;
+  min-height: 40px;
+  margin: 8px 8px 32px;
+}
+#submit {
+  min-width: 200px;
+  min-height: 40px;
+  margin-top: 16px;
+  font-size: large;
 }
 .habit {
   display: flex;
