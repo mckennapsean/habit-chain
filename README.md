@@ -1,6 +1,8 @@
 # habit-chain
 Web app to maintain habits over time
 
+![image](https://github.com/mckennapsean/habit-chain/assets/1406149/bbd3f1ca-cddf-4521-994e-d94ed9c1547a)
+
 ## Initial Design
 Backed by [Habitica](https://habitica.com/)'s API,
 a Streak-like app interface for dont-break-the-chain style habits.
