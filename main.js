@@ -174,6 +174,7 @@ function submitApiKey() {
   localStorage.setItem(localStorageApiKey, habiticaApiKey)
   localStorage.setItem(localStorageUserIdKey, habiticaUserIdKey)
   document.querySelector('.input').style.display = 'none'
+  onLoad()
 }
 async function processStartOfDay() {
   try {
