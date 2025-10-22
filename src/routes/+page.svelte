@@ -104,20 +104,33 @@
 {/if}
 
 <!-- The habit circles -->
-{#each habits as habit, index (habit.id)}
-  <HabitCircle
-    {habit}
-    {index}
-    {canVibrate}
-    {timeToTriggerIncrement}
-    on:increment={handleIncrement}
-  />
-{:else}
-  {#if !showInput}
-    {#if isLoading}
-      <p>Loading habits...</p>
-    {:else}
-      <p>No habits found. Please create some in Habitica.</p>
+<div class="habit-grid">
+  {#each habits as habit, index (habit.id)}
+    <HabitCircle
+      {habit}
+      {index}
+      {canVibrate}
+      {timeToTriggerIncrement}
+      on:increment={handleIncrement}
+    />
+  {:else}
+    {#if !showInput}
+      {#if isLoading}
+        <p>Loading habits...</p>
+      {:else}
+        <p>No habits found. Please create some in Habitica.</p>
+      {/if}
     {/if}
-  {/if}
-{/each}
+  {/each}
+</div>
+
+<style>
+  .habit-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 20px;
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+</style>

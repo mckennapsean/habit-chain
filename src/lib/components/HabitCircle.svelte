@@ -111,11 +111,102 @@
     on:touchstart|preventDefault={startPress}
     on:touchend|preventDefault={endPress}
     on:contextmenu|preventDefault
-  ></span>
-  <span class="counter" class:completed={isIncremented}>{counterValue}</span>
+  >
+    <span class="counter" class:completed={isIncremented}>{counterValue}</span>
+  </span>
   <span class="text">{habit.text}</span>
 </span>
 
 <style>
-  /* Relying on global styles in app.css */
+  .habit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    user-select: none;
+    width: 100%; /* Fill the grid cell */
+    padding: 10px; /* Add some breathing room */
+    box-sizing: border-box;
+  }
+  .hidden {
+    display: none;
+  }
+  .circle {
+    /* Make the circle responsive and square */
+    width: 100%;
+    height: 0;
+    padding-bottom: 100%; /* Creates a perfect square */
+    margin: 0; /* Remove fixed margin */
+    background-color: #DF8FFF; /* Base color */
+    border-radius: 50%;
+    cursor: pointer;
+    position: relative; /* For positioning the counter and pseudo-element */
+    overflow: hidden; /* To contain the fill animation */
+    transition: background-color 0.3s ease; /* For the final completed state */
+
+    /*  these alone don't seem to stop windows from opening up context menu on long press... annoying  */
+    -webkit-touch-callout:none;
+    -webkit-user-select:none;
+    -khtml-user-select:none;
+    -moz-user-select:none;
+    -ms-user-select:none;
+    user-select:none;
+    -webkit-touch-callout: none; /* Safari Touch */
+    -webkit-user-select: none;   /* Webkit */
+    -moz-user-select: none;      /* Firefox */
+    -ms-user-select: none;       /* Edge*/
+    user-select: none;       /* Future-proof*/
+    -webkit-tap-highlight-color:rgba(0,0,0,0);
+  }
+
+  /* The fill animation using a pseudo-element and transform: scale() */
+  .circle::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background-color: #7e4dff; /* Fill color */
+    transform: scale(0); /* Start hidden */
+    /* Transition allows for smooth fill and smooth reset on release */
+    transition: transform 0.5s linear;
+  }
+
+  /* When animating, the scale goes to 1 (full fill) */
+  .circle.fadecolor::before {
+    transform: scale(1);
+  }
+
+  /* Final completed state */
+  .circle.completed {
+    background-color: #7e4dff;
+  }
+  /* Ensure the fill is visible in the completed state */
+  .circle.completed::before {
+    transform: scale(1);
+    transition: none; /* Prevent transition on load */
+  }
+
+  .counter {
+    /* Center the counter inside the circle */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 2.5em; /* Use relative units */
+    pointer-events: none;
+    height: auto;
+    z-index: 1; /* Ensure counter is above the fill pseudo-element */
+  }
+  .counter.completed {
+    color: white;
+  }
+  .text {
+    font-size: 1.5em; /* Use relative units */
+    margin-top: 10px;
+    margin-bottom: 32px;
+    max-width: 100%;
+    text-align: center;
+  }
 </style>
