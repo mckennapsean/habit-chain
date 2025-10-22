@@ -1,4 +1,5 @@
 <script lang="ts">
+  export let params;
   import { onMount } from 'svelte';
   import {
     determineApiKey,
@@ -14,6 +15,7 @@
   let isComplete = false;
   let keyInput = '';
   let userInput = '';
+  let isLoading = true; // Added state to track loading
 
   // Constants from main.js
   const canVibrate = 'vibrate' in navigator;
@@ -21,7 +23,7 @@
 
   // Function to check if all habits are confirmed
   function checkForCompletedDay() {
-    isComplete = habits.every(h => h.confirmed);
+    isComplete = habits.length > 0 && habits.every(h => h.confirmed);
   }
 
   // The main application logic, replacing onLoad and populateHabits
@@ -30,6 +32,7 @@
 
     if (!makeRequests) {
       showInput = true;
+      isLoading = false; // Set to false if we need input
       return;
     }
 
@@ -39,18 +42,20 @@
     const userData = await getHabiticaUserData();
 
     if (userData && userData.data) {
-      // Filter for habits (type 'habit') and map to a reactive structure
+      // The Habitica API returns a flat array of tasks.
+      // Filter for habits AND dailies, as the user's data contains dailies.
       habits = userData.data
-        .filter((task: any) => task.type === 'habit')
+        .filter((task: any) => task.type === 'habit' || task.type === 'daily')
         .map((habit: any) => ({
           ...habit,
-          streak: habit.value, // Assuming 'value' is the streak for habits
+          streak: habit.streak, // Use the correct 'streak' property from the API
           incremented: habit.completed, // 'completed' status from API
           confirmed: habit.completed, // 'confirmed' status from API
         }));
     }
 
-    checkForCompletedDay();
+    checkForCompletedDay(); // Manual call after habits are loaded
+    isLoading = false; // Set to false when loading is complete
   }
 
   function handleSync() {
@@ -64,11 +69,28 @@
 
   // Function to update habit state when a child component emits an increment event
   function handleIncrement(event: CustomEvent) {
-    const { index, incremented, confirmed } = event.detail;
+    const { index, incremented, confirmed, counterChange } = event.detail;
+    
+    // Update completion status
     habits[index].incremented = incremented;
     habits[index].confirmed = confirmed;
-    habits = habits; // Trigger Svelte reactivity
-    checkForCompletedDay();
+
+    // Update counter based on counterChange signal (for optimistic/revert updates)
+    if (counterChange !== 0) {
+      habits[index].streak += counterChange;
+    }
+
+    habits = [...habits]; // Trigger Svelte reactivity
+    checkForCompletedDay(); // Manual call after habits are updated
+  }
+
+  // Manually set body class based on isComplete state
+  $: if (typeof document !== 'undefined') {
+    if (isComplete) {
+      document.body.classList.add('complete');
+    } else {
+      document.body.classList.remove('complete');
+    }
   }
 </script>
 
@@ -92,18 +114,10 @@
   />
 {:else}
   {#if !showInput}
-    <!-- Loading or no habits message -->
-    <p>Loading habits...</p>
+    {#if isLoading}
+      <p>Loading habits...</p>
+    {:else}
+      <p>No habits found. Please create some in Habitica.</p>
+    {/if}
   {/if}
 {/each}
-
-<!-- Global style to apply 'complete' class to body. -->
-<svelte:head>
-  <style>
-    {#if isComplete}
-      body {
-        background-color: #bfa6ff; /* body.complete style from main.css */
-      }
-    {/if}
-  </style>
-</svelte:head>

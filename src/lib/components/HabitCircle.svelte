@@ -9,19 +9,15 @@
 
   const dispatch = createEventDispatcher();
 
-  let isIncremented = habit.incremented;
-  let isConfirmed = habit.confirmed;
   let isAnimating = false;
-  let counterValue = habit.streak;
   let mouseDownTime: Date | null = null;
   let timeoutId: number | null = null;
 
-  // Reactive block to update local state when habit prop changes (e.g., on initial load)
-  $: {
-    isIncremented = habit.incremented;
-    isConfirmed = habit.confirmed;
-    counterValue = habit.streak;
-  }
+  // Use reactive declarations to derive state from props, making the component "purer"
+  // and avoiding the flash caused by local state being overwritten by prop updates.
+  $: isIncremented = habit.incremented;
+  $: isConfirmed = habit.confirmed;
+  $: counterValue = habit.streak;
 
   function startPress() {
     if (isIncremented) {
@@ -36,7 +32,6 @@
     isAnimating = true;
 
     timeoutId = window.setTimeout(() => {
-      // This is where the increment logic will run if the press is long enough
       incrementCounter();
     }, timeToTriggerIncrement);
   }
@@ -61,34 +56,43 @@
     const difference = new Date().getTime() - (mouseDownTime?.getTime() ?? 0);
 
     if (difference >= timeToTriggerIncrement) {
-      // Local optimistic update
-      counterValue++;
-      isIncremented = true;
       isAnimating = false; // Animation is complete
 
       if (canVibrate) {
         navigator.vibrate(150);
       }
 
-      // API call
-      const incremented = await incrementViaApi(habit);
-
-      if (!incremented) {
-        // API failed, revert local state
-        counterValue--;
-        isIncremented = false;
-        isConfirmed = false;
-        alert('Habitica API failed to increment. Reverting local count.');
-      } else {
-        isConfirmed = true;
-      }
-
-      // Dispatch event to parent to update global state
+      // 1. Optimistic Update (Dispatch to parent)
+      // Parent will update the habit prop, which updates the derived state (isIncremented, counterValue)
       dispatch('increment', {
         index,
-        incremented: isIncremented,
-        confirmed: isConfirmed,
+        incremented: true,
+        confirmed: false,
+        counterChange: 1, // Signal parent to increment counter
       });
+
+      // 2. API call
+      const incremented = await incrementViaApi(habit);
+
+      // 3. Final Update (Dispatch to parent)
+      if (!incremented) {
+        // API failed, revert state in parent
+        dispatch('increment', {
+          index,
+          incremented: false,
+          confirmed: false,
+          counterChange: -1, // Signal parent to decrement counter
+        });
+        alert('Habitica API failed to increment. Reverting local count.');
+      } else {
+        // API succeeded, confirm state in parent
+        dispatch('increment', {
+          index,
+          incremented: true,
+          confirmed: true,
+          counterChange: 0, // Counter already updated
+        });
+      }
     }
   }
 

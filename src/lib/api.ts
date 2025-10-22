@@ -54,7 +54,11 @@ export async function processStartOfDay() {
         },
       });
     if (!response.ok) {
-      throw new Error('Received an error in start of day request');
+      if (response.status === 500) {
+        console.warn('Habitica cron returned 500. Assuming cron already ran and continuing.');
+        return; // Continue execution without throwing
+      }
+      throw new Error(`Received an error in start of day request: ${response.status}`);
     }
     return response.json();
   } catch {
