@@ -13,3 +13,29 @@ Visit the [demo page](https://habits.mckennapsean.com/) to try it out!
 
 Just input your [Habitica API key & user id](https://habitica.com/user/settings/siteData),
 and your dailies will be pulled in & can be checked off by pressing down.
+
+## Local Development
+
+To set up the project locally:
+
+1. Install dependencies:
+```bash
+npm install
+```
+
+2. Start the development server:
+```bash
+npm run dev
+```
+
+3. Run checks and linting:
+```bash
+# Type-check the code
+npm run check
+
+# Check formatting and linting
+npm run lint
+
+# Format the code
+npm run format
+```
